@@ -1,0 +1,28 @@
+---
+- hosts: all
+  sudo: true
+  vars:
+    document_root: /vagrant
+  gather_facts: no
+  pre_tasks:
+    - name: 'install python2'
+      raw: sudo apt-get -y install python-simplejson
+    - name: update apt cache
+      apt: update_cache=yes
+    - user:
+        name: tkhalil
+        comment: "Thomas Khalil"
+        uid: 1040
+        group: admin
+        shell: /bin/bash
+    - name: Set authorized key for user ubuntu copying it from current user
+      authorized_key:
+        user: tkhalil
+        state: present
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+  roles:
+    - webserver
+    - database
+    - ansible-java8-oracle
+
+
